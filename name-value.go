@@ -138,10 +138,13 @@ func (nvp *NameValues) String(name string) (string, bool) {
 }
 
 // Strings returns the values as a string array.
-// If the value is comma-separated, all elements delimited by the comma
-// will be returned as an array of string
+// If the name does not exist, this function will return an empty string array
+// If the value is comma-separated, all elements delimited by the comma will be returned as an array
 func (nvp *NameValues) Strings(name string) []string {
-	value, _ := nvp.String(name)
+	value, exists := nvp.String(name)
+	if !exists {
+		return []string{}
+	}
 	if strings.Contains(value, ",") {
 		return strings.Split(value, ",")
 	}
@@ -187,8 +190,12 @@ func (nvp *NameValues) Int(name string) (int, bool) {
 }
 
 // Ints returns the values as an int array
+// If the name does not exist, this function will return an empty int array
 func (nvp *NameValues) Ints(name string) []int {
-	value, _ := nvp.Int(name)
+	value, exists := nvp.Int(name)
+	if !exists {
+		return []int{}
+	}
 	var result [1]int
 	result[0] = value
 	return result[:]
@@ -231,8 +238,12 @@ func (nvp *NameValues) Int64(name string) (int64, bool) {
 }
 
 // Int64s returns the values as an int64 array
+// If the name does not exist, this function will return an empty int64 array
 func (nvp *NameValues) Int64s(name string) []int64 {
-	value, _ := nvp.Int64(name)
+	value, exists := nvp.Int64(name)
+	if !exists {
+		return []int64{}
+	}
 	var result [1]int64
 	result[0] = value
 	return result[:]
@@ -259,8 +270,12 @@ func (nvp *NameValues) Bool(name string) (bool, bool) {
 }
 
 // Bools returns the values as a boolean array
+// If the name does not exist, this function will return an empty boolean array
 func (nvp *NameValues) Bools(name string) []bool {
-	value, _ := nvp.Bool(name)
+	value, exists := nvp.Bool(name)
+	if !exists {
+		return []bool{}
+	}
 	var result [1]bool
 	result[0] = value
 	return result[:]
@@ -303,8 +318,12 @@ func (nvp *NameValues) Float64(name string) (float64, bool) {
 }
 
 // Float64s returns the values as a float64 array
+// If the name does not exist, this function will return an empty float64 array
 func (nvp *NameValues) Float64s(name string) []float64 {
-	value, _ := nvp.Float64(name)
+	value, exists := nvp.Float64(name)
+	if !exists {
+		return []float64{}
+	}
 	var result [1]float64
 	result[0] = value
 	return result[:]
@@ -358,8 +377,12 @@ func (nvp *NameValues) Decimal(name string) (ssd.Decimal, bool) {
 }
 
 // Decimals returns the values as a decimal array
+// If the name does not exist, this function will return an empty decimal array
 func (nvp *NameValues) Decimals(name string) []ssd.Decimal {
-	value, _ := nvp.Decimal(name)
+	value, exists := nvp.Decimal(name)
+	if !exists {
+		return []ssd.Decimal{}
+	}
 	var result [1]ssd.Decimal
 	result[0] = value
 	return result[:]
