@@ -55,10 +55,10 @@ func (nvp *NameValues) Exists(name string) bool {
 	return exists
 }
 
-// NameValueGet gets the value from the collection of NameValues by name
+// Get gets the value from the collection of NameValues by name
 //
 // This function requires version 1.18+
-func NameValueGet[T constraints.Ordered | bool](nvs NameValues, name string) T {
+func Get[T constraints.Ordered | bool](nvs NameValues, name string) T {
 	if !nvs.prepared {
 		nvs.prepare()
 	}
@@ -107,11 +107,11 @@ func NameValueGet[T constraints.Ordered | bool](nvs NameValues, name string) T {
 	return value
 }
 
-// NameValueGetPtr gets the value from the collection of NameValues by name as pointer
+// GetPtr gets the value from the collection of NameValues by name as pointer
 //
 // This function requires version 1.18+
-func NameValueGetPtr[T constraints.Ordered | bool](nvs NameValues, name string) *T {
-	value := NameValueGet[T](nvs, name)
+func GetPtr[T constraints.Ordered | bool](nvs NameValues, name string) *T {
+	value := Get[T](nvs, name)
 	return &value
 }
 
@@ -457,7 +457,7 @@ func (nvp *NameValues) PtrDecimal(name string) (*ssd.Decimal, bool) {
 
 // ToInterfaceArray converts name values to interface array
 func (nvp *NameValues) ToInterfaceArray() []interface{} {
-	return NameValuesToInterfaceArray(*nvp)
+	return ToInterfaceArray(*nvp)
 }
 
 // Interpolate - interpolate string with values from with base string
@@ -501,8 +501,8 @@ func Interpolate(base string, nv NameValues) (string, []any) {
 	return nstr, vals
 }
 
-// NameValuesToInterfaceArray converts name values to interface array
-func NameValuesToInterfaceArray(values NameValues) []interface{} {
+// ToInterfaceArray converts name values to interface array
+func ToInterfaceArray(values NameValues) []interface{} {
 	args := make([]interface{}, len(values.Pair))
 	i := 0
 	for _, v := range values.Pair {
