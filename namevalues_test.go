@@ -18,7 +18,7 @@ func TestNameValues(t *testing.T) {
 		},
 	}
 
-	vs := Get[string](nvs, "name")
+	vs := Get[string](nvs, "namex")
 	t.Log(vs)
 
 	vb := Get[bool](nvs, "active")

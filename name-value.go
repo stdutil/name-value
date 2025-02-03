@@ -145,6 +145,8 @@ func GetPtr[T constraints.Ordered | bool](nvs NameValues, name string) *T {
 		case float64:
 			val, _ := strconv.ParseFloat(t, 64)
 			*value = any(val).(T)
+		case string:
+			*value = any(t).(T)
 		}
 	default:
 		*value = t.(T)
