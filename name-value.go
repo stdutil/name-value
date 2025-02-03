@@ -55,19 +55,75 @@ func (nvp *NameValues) Exists(name string) bool {
 	return exists
 }
 
-// Get gets the value from the collection of NameValues by name
+// // Get gets the value from the collection of NameValues by name
+// //
+// // This function requires version 1.18+
+// func Get[T constraints.Ordered | bool](nvs NameValues, name string) T {
+// 	if !nvs.prepared {
+// 		nvs.prepare()
+// 	}
+
+// 	name = strings.ToLower(name)
+// 	tmp := nvs.Pair[name]
+
+// 	tpt := any(*new(T))
+// 	value := *new(T)
+
+// 	// If the value is a string and the inferred type is otherwise
+// 	// try to convert, else just convery via inferred type
+// 	switch t := tmp.(type) {
+// 	case string:
+// 		switch tpt.(type) {
+// 		case int:
+// 			val, _ := strconv.ParseInt(t, 10, 32)
+// 			value = any(int(val)).(T)
+// 		case int64:
+// 			val, _ := strconv.ParseInt(t, 10, 64)
+// 			value = any(val).(T)
+// 		case bool:
+// 			val, _ := strconv.ParseBool(t)
+// 			value = any(val).(T)
+// 		case float32:
+// 			val, _ := strconv.ParseFloat(t, 32)
+// 			value = any(val).(T)
+// 		case float64:
+// 			val, _ := strconv.ParseFloat(t, 64)
+// 			value = any(val).(T)
+// 		default:
+// 			if tmp != nil {
+// 				value = tmp.(T)
+// 			} else {
+// 				value = getZero[T]()
+// 			}
+// 		}
+// 	default:
+// 		if t != nil {
+// 			value = t.(T)
+// 		} else {
+// 			value = getZero[T]()
+// 		}
+// 	}
+
+// 	return value
+// }
+
+// GetPtr gets the value from the collection of NameValues by name and returns a pointer
+//
+// // This function returns nil if it does not find the name.
 //
 // This function requires version 1.18+
-func Get[T constraints.Ordered | bool](nvs NameValues, name string) T {
+func GetPtr[T constraints.Ordered | bool](nvs NameValues, name string) *T {
 	if !nvs.prepared {
 		nvs.prepare()
 	}
 
-	name = strings.ToLower(name)
-	tmp := nvs.Pair[name]
+	tmp, here := nvs.Pair[strings.ToLower(name)]
+	if !here || tmp == nil {
+		return nil
+	}
 
 	tpt := any(*new(T))
-	value := *new(T)
+	value := new(T)
 
 	// If the value is a string and the inferred type is otherwise
 	// try to convert, else just convery via inferred type
@@ -76,44 +132,47 @@ func Get[T constraints.Ordered | bool](nvs NameValues, name string) T {
 		switch tpt.(type) {
 		case int:
 			val, _ := strconv.ParseInt(t, 10, 32)
-			value = any(int(val)).(T)
+			*value = any(int(val)).(T)
 		case int64:
 			val, _ := strconv.ParseInt(t, 10, 64)
-			value = any(val).(T)
+			*value = any(val).(T)
 		case bool:
 			val, _ := strconv.ParseBool(t)
-			value = any(val).(T)
+			*value = any(val).(T)
 		case float32:
 			val, _ := strconv.ParseFloat(t, 32)
-			value = any(val).(T)
+			*value = any(val).(T)
 		case float64:
 			val, _ := strconv.ParseFloat(t, 64)
-			value = any(val).(T)
-		default:
-			if tmp != nil {
-				value = tmp.(T)
-			} else {
-				value = getZero[T]()
-			}
+			*value = any(val).(T)
 		}
 	default:
-		if t != nil {
-			value = t.(T)
-		} else {
-			value = getZero[T]()
-		}
+		*value = t.(T)
 	}
 
 	return value
 }
 
-// GetPtr gets the value from the collection of NameValues by name as pointer
+// Get gets the value from the collection of NameValues by name.
+//
+// This function returns the zero value of T if it does not find the name.
 //
 // This function requires version 1.18+
-func GetPtr[T constraints.Ordered | bool](nvs NameValues, name string) *T {
-	value := Get[T](nvs, name)
-	return &value
+func Get[T constraints.Ordered | bool](nvs NameValues, name string) T {
+	value := GetPtr[T](nvs, name)
+	if value == nil {
+		return getZero[T]()
+	}
+	return *value
 }
+
+// // GetPtr gets the value from the collection of NameValues by name as pointer
+// //
+// // This function requires version 1.18+
+// func GetPtr[T constraints.Ordered | bool](nvs NameValues, name string) *T {
+// 	value := Get[T](nvs, name)
+// 	return &value
+// }
 
 // String returns the name value as string. The second result returns the existence.
 func (nvp *NameValues) String(name string) (string, bool) {
